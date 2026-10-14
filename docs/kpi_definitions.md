@@ -13,5 +13,7 @@ One definition per KPI. If a number in this repo does not match one of these, it
 | Cohort | Month of a customer's first purchase **in this file** (file starts Dec 2009, so the Dec 2009 cohort mixes new and existing customers and is excluded) | `cohorts` | - |
 | Monthly retention | Customers from a cohort who bought in month N / cohort size | `retention` | ~20% per month |
 | 12-month repeat rate | Customers from Jan-Nov 2010 cohorts who ordered again within 12 months / cohort size | `cohorts` | 70.0% |
-| Recency / Frequency / Monetary | Days since last order at 2011-12-10 / distinct invoices / net revenue (sales minus returns). Customers with net revenue <= 0 are excluded | `rfm_base` | - |
-| At-risk (high value) | RFM frequency score >= 4 and recency score <= 2 | `rfm_segments` | 423 customers |
+| Recency / Frequency / Monetary | Days since last order at 2011-12-10 / distinct invoices / net revenue (sales minus returns, rounded to pence). Customers with net revenue <= 0 are excluded | `rfm_base` | - |
+| RFM score | 1 to 5 by percentile of customers: `CEIL(5 * CUME_DIST())`. Customers with the same value share a score. Recency is scored so that 5 = most recent | `rfm` | - |
+| Champions | Recency score >= 4 and frequency score >= 4 | `rfm_segments` | 25.9% of customers, 70.8% of net revenue |
+| At-risk (high value) | RFM frequency score >= 4 and recency score <= 2 | `rfm_segments` | 421 customers |
