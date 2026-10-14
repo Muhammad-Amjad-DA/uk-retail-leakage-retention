@@ -55,7 +55,9 @@ for i, (pc, pr) in enumerate(zip(s.pct_customers, s.pct_revenue)):
     ax.text(pc + 0.8, i + h/2, f"{pc:.1f}%", va="center", fontsize=11); ax.text(pr + 0.8, i - h/2, f"{pr:.1f}%", va="center", fontsize=11, fontweight="bold")
 ax.set_yticks(list(y)); ax.set_yticklabels(s.name, fontsize=12); ax.invert_yaxis(); ax.set_xticks([]); ax.spines["bottom"].set_visible(False)
 ax.legend(frameon=False, loc="lower right", fontsize=11)
-fig.suptitle("23.5% of customers generate 69.5% of net revenue", x=0.06, ha="left", fontsize=20, fontweight="bold", color=NAVY)
-fig.text(0.06, 0.88, "423 'at risk' customers hold £1.06M of lifetime revenue and have not ordered for a median 338 days", fontsize=11.5, color=GREY)
+ch = s[s.segment.str.contains("Champions")].iloc[0]
+ar = pd.read_csv(out / "05_rfm_segments_q2.csv").iloc[0]
+fig.suptitle(f"{ch.pct_customers:.1f}% of customers generate {ch.pct_revenue:.1f}% of net revenue", x=0.06, ha="left", fontsize=20, fontweight="bold", color=NAVY)
+fig.text(0.06, 0.88, f"{int(ar.at_risk_customers)} 'at risk' customers hold £{ar.lifetime_net_revenue/1e6:.2f}M of lifetime revenue and have not ordered for a median {int(ar.median_days_since_last_order)} days", fontsize=11.5, color=GREY)
 fig.tight_layout(rect=[0, 0, 1, 0.86]); fig.savefig(img / "rfm_segments.png"); plt.close(fig)
 print("ok")
