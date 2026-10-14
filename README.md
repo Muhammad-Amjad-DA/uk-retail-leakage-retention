@@ -7,8 +7,8 @@
 | | |
 |---|---|
 | **Answer** | Reported returns are overstated by two same-day order-and-cancel entries worth £245,653 (34% of all returned value). The genuine 2011 return rate is **2.31%, not 4.84%**. |
-| **Recommendation** | Fix the KPI definitions first, then spend retention budget on **423 high-value customers who stopped ordering** after the 2010 peak season. |
-| **Impact (scenario)** | Winning back 10-20% of them is worth roughly **£53k-£106k a year**, about 0.6% to 1.2% of annual net revenue. Assumptions below. |
+| **Recommendation** | Fix the KPI definitions first, then spend retention budget on **421 high-value customers who have gone quiet**: a median 338 days without an order. |
+| **Impact (scenario)** | Winning back 10-20% of them is worth roughly **£53k-£105k a year**, about 0.6% to 1.1% of annual net revenue. Assumptions below. |
 | **Data** | UCI *Online Retail II*, 1,067,371 invoice lines, Dec 2009 to Dec 2011, real transactions |
 | **Tools** | SQL (DuckDB, PostgreSQL-compatible syntax), Python for the runner and charts |
 
@@ -45,21 +45,29 @@ Two Excel sheets, 53,628 invoices, 5,942 identified customers, 43 countries. Kno
 
 ![Cohort retention](images/cohort_retention.png)
 
-**Segments.** 23.5% of customers (Champions) generate 69.5% of net revenue.
+**Segments.** Customers are scored 1 to 5 on recency, frequency and monetary value by percentile (ties share a score). The 25.9% of customers who are "Champions" (recent and frequent buyers) generate 70.8% of net revenue.
+
+| Segment | Rule (scores 1 to 5) |
+|---|---|
+| Champions | recency 4-5 and frequency 4-5 |
+| At risk (high value) | frequency 4-5 and recency 1-2 |
+| New / recent | recency 4-5 and frequency 1-2 |
+| Lost | recency 1-2 and frequency 1-2 |
+| Core | everyone else |
 
 ![RFM segments](images/rfm_segments.png)
 
 ## 5. Key insight
-The most important number in the file was wrong, and the error could easily have triggered a wasted returns investigation. Separately, 423 customers who ordered often (RFM frequency score 4-5) have been silent for a median 338 days. 65% of them bought in Q4 2010, then not again.
+The most important number in the file was wrong, and the error could easily have triggered a wasted returns investigation. Separately, 421 customers who ordered often (RFM frequency score 4-5) have been silent for a median 338 days, and none has ordered since 8 June 2011. 65% of them bought during the 2010 peak season (October to December).
 
 ## 6. Recommendation
 1. **Publish one definition** of net product revenue and return rate ([`docs/kpi_definitions.md`](docs/kpi_definitions.md)). Review any credit note over £5,000 that matches a sale in the previous week before it enters reporting.
-2. **Win-back campaign** for the 423 high-value customers, timed before the next peak season (September-October). Owner: account management.
+2. **Win-back campaign** for the 421 high-value customers, timed before the next peak season (September-October). Owner: account management.
 3. **Capture customer ID on every order.** 13.6% of net product revenue (£2.57M) cannot be tied to a customer, so it cannot be retained or segmented.
 4. **Account review** with the top 20 returning customers (37.9% of returned value).
 
 ## 7. Business impact (scenario, not a forecast)
-At-risk customers averaged £2,498 of net revenue over the 24-month file, about £1,249 a year. If 10% to 20% (42 to 85 customers) return to that spend, revenue is **£53k to £106k a year**. Assumes they return to historical average spend and ignores campaign cost.
+At-risk customers averaged £2,503 of net revenue over the 24-month file, about £1,252 a year. If 10% to 20% (42 to 84 customers) return to that spend, revenue is **£53k to £105k a year**. Assumes they return to historical average spend and ignores campaign cost.
 
 ## Validation
 `sql/06_tieout_tests.sql` reconciles every headline number. All six tests pass:
@@ -77,11 +85,12 @@ At-risk customers averaged £2,498 of net revenue over the 24-month file, about 
 - One retailer and two years of history. Results do not generalise.
 - First purchase means first seen in this file. The Dec 2009 cohort is excluded.
 - "At risk" is a rule-based segment, not a predictive model.
-- The £5,000 / 7-day order-error rule is a judgement call. A lower threshold would also catch ordinary exact-quantity returns.
+- The £5,000 / 7-day order-error rule is a judgement call. Without the threshold, 2,551 smaller credit-note lines (£167k) would also match, and they look like ordinary exact-quantity returns.
+- RFM scores are percentile-based, so segment sizes depend on the cut-offs. "At risk" (frequency score of 4 or 5, recency score of 1 or 2) is a rule, not a prediction.
 - Duplicate removal assumes repeated rows are errors. Keeping them adds £0.43M.
 
 ## How AI was used
-See [`docs/ai_log.md`](docs/ai_log.md): what AI drafted, two mistakes it made that the tie-out tests caught, and the judgement calls to challenge.
+See [`docs/ai_log.md`](docs/ai_log.md): what AI drafted, three mistakes it made that tests or the final audit caught, and the judgement calls to challenge.
 
 ## Reproduce
 ```
