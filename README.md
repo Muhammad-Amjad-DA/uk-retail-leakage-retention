@@ -105,3 +105,4 @@ python python/make_charts.py
 `sql/` pipeline in run order | `python/` runner and chart code | `docs/` KPI definitions, data quality log, AI log | `images/` README visuals
 
 *Data: UCI Machine Learning Repository, Online Retail II. Check the source page for licence terms.*
+ 
